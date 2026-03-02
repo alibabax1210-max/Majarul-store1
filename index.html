@@ -263,12 +263,26 @@ function doJoin(){
   sys(roomIco + ' ' + roomLabel + ' · anonymous · real people');
   sys('Say hi! 👋');
 
-  // Listen for NEW messages only (from this moment)
-  var joinTs = Date.now();
-  msgListener = msgRef.orderByChild('ts').startAt(joinTs).on('child_added', function(snap){
-    var m = snap.val();
-    if(!m) return;
-    addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts);
+  // Load last 50 messages first, then listen for new ones
+  msgRef.orderByChild('ts').limitToLast(50).once('value', function(snap){
+    var messages = [];
+    snap.forEach(function(child){ messages.push(child.val()); });
+    if(messages.length > 0){
+      sys('📜 ' + messages.length + ' previous messages loaded');
+      messages.forEach(function(m){
+        if(!m) return;
+        addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts);
+      });
+    } else {
+      sys('No previous messages — be the first! 👋');
+    }
+    // Now listen for brand new messages
+    var lastTs = messages.length > 0 ? messages[messages.length-1].ts + 1 : Date.now();
+    msgListener = msgRef.orderByChild('ts').startAt(lastTs).on('child_added', function(snap){
+      var m = snap.val();
+      if(!m) return;
+      addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts);
+    });
   });
 }
 
