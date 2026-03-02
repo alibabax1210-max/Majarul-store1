@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<title>AnonChat</title>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+:root{--bg:#0d0d0f;--sur:#16161a;--card:#1e1e24;--brd:#2a2a35;--acc:#7c3aed;--grn:#22c55e;--red:#ef4444;--txt:#e2e2e8;--dim:#6b6b80;--me:#2d1b69}
+html,body{height:100%;overflow:hidden}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--txt)}
+#pg-land{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+#pg-land.hide{display:none}
+#pg-chat{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column}
+#pg-chat.show{display:flex}
+#loading{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;gap:14px}
+#loading.hide{display:none}
+.spinner{width:30px;height:30px;border-radius:50%;border:3px solid var(--brd);border-top-color:var(--acc);animation:spin .7s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.ltxt{font-size:.8rem;color:var(--dim);font-family:monospace}
+/* LANDING */
+.logo{font-size:3rem;margin-bottom:4px;animation:fl 3s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-7px)}}
+.brand{font-size:1.9rem;font-weight:800;background:linear-gradient(135deg,#a855f7,#6366f1);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:4px}
+.tag{color:var(--dim);font-size:.88rem;text-align:center;margin-bottom:26px;line-height:1.6}
+.tag b{color:#a855f7}
+.box{background:var(--sur);border:1px solid var(--brd);border-radius:18px;padding:22px;width:100%;max-width:420px}
+.lbl{font-size:.68rem;letter-spacing:2px;color:var(--dim);margin-bottom:7px;font-family:monospace}
+.nrow{display:flex;gap:8px;margin-bottom:16px}
+.ninp{flex:1;background:var(--card);border:1px solid var(--brd);color:var(--txt);font-size:1rem;padding:12px 14px;border-radius:10px;outline:none}
+.ninp:focus{border-color:var(--acc)}
+.dice{background:var(--card);border:1px solid var(--brd);color:var(--dim);padding:12px;border-radius:10px;font-size:1rem;cursor:pointer;min-width:46px;text-align:center;touch-action:manipulation}
+.rooms{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+.room{background:var(--card);border:2px solid var(--brd);border-radius:10px;padding:12px;text-align:center;cursor:pointer;touch-action:manipulation;user-select:none;transition:all .15s}
+.room.on{border-color:var(--acc);background:rgba(124,58,237,.1)}
+.room-i{font-size:1.3rem;margin-bottom:3px}
+.room-n{font-size:.82rem;font-weight:700}
+.room-d{font-size:.63rem;color:var(--dim);margin-top:2px}
+.joinbtn{width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;font-size:1.05rem;font-weight:800;padding:16px;border-radius:12px;cursor:pointer;touch-action:manipulation;-webkit-appearance:none;display:block;text-align:center}
+.pill{margin-top:12px;text-align:center;font-size:.7rem;color:var(--dim);font-family:monospace;display:flex;align-items:center;justify-content:center;gap:6px}
+.dot{width:6px;height:6px;border-radius:50%;background:var(--grn);animation:bl 1.5s infinite;flex-shrink:0}
+@keyframes bl{0%,100%{opacity:1}50%{opacity:.1}}
+/* CHAT */
+.topbar{display:flex;align-items:center;gap:8px;padding:10px 12px;border-bottom:1px solid var(--brd);background:var(--sur);flex-shrink:0}
+.backbtn{background:var(--card);border:1px solid var(--brd);color:var(--dim);padding:8px 10px;border-radius:8px;font-size:.82rem;cursor:pointer;touch-action:manipulation;white-space:nowrap}
+.tb-info{display:flex;align-items:center;gap:7px;flex:1;min-width:0}
+.tb-i{font-size:1.1rem;flex-shrink:0}
+.tb-n{font-weight:700;font-size:.9rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.tb-s{font-size:.58rem;color:var(--dim);font-family:monospace}
+.tb-right{display:flex;gap:6px;align-items:center;flex-shrink:0}
+.tb-cnt{font-size:.65rem;color:var(--grn);font-family:monospace;background:rgba(34,197,94,.08);border:1px solid rgba(34,197,94,.2);padding:4px 9px;border-radius:20px;display:flex;align-items:center;gap:4px;white-space:nowrap}
+.sharebtn{background:var(--card);border:1px solid rgba(168,85,247,.4);color:#a855f7;padding:6px 10px;border-radius:8px;font-size:.78rem;cursor:pointer;touch-action:manipulation;white-space:nowrap}
+.msgs{flex:1;overflow-y:auto;padding:14px;display:flex;flex-direction:column;gap:10px;-webkit-overflow-scrolling:touch}
+.msgs::-webkit-scrollbar{width:3px}
+.msgs::-webkit-scrollbar-thumb{background:var(--brd)}
+.smsg{text-align:center;font-size:.65rem;font-family:monospace;color:var(--dim);background:var(--sur);border:1px solid var(--brd);border-radius:20px;padding:5px 14px;margin:2px auto;max-width:300px}
+.msg{display:flex;gap:8px;animation:mi .25s ease}
+@keyframes mi{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.msg.me{flex-direction:row-reverse}
+.av{width:32px;height:32px;border-radius:50%;background:var(--card);border:1px solid var(--brd);display:flex;align-items:center;justify-content:center;font-size:.9rem;flex-shrink:0}
+.bw{max-width:75%;display:flex;flex-direction:column;gap:2px}
+.msg.me .bw{align-items:flex-end}
+.bn{font-size:.6rem;color:var(--dim);font-family:monospace;padding:0 3px}
+.bb{padding:10px 13px;border-radius:14px;font-size:.9rem;line-height:1.5;word-break:break-word}
+.msg.them .bb{background:var(--card);border:1px solid var(--brd);border-bottom-left-radius:3px}
+.msg.me .bb{background:var(--me);border:1px solid rgba(124,58,237,.3);border-bottom-right-radius:3px;color:#e9d5ff}
+.bt{font-size:.58rem;color:var(--dim);font-family:monospace;padding:0 3px}
+.inpbar{display:flex;gap:8px;padding:10px 12px;border-top:1px solid var(--brd);background:var(--sur);flex-shrink:0;align-items:flex-end}
+.inpwrap{flex:1;background:var(--card);border:1px solid var(--brd);border-radius:14px;display:flex;align-items:flex-end;padding:8px 12px;gap:6px}
+.inpwrap:focus-within{border-color:var(--acc)}
+#mi{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-size:.95rem;resize:none;max-height:100px;line-height:1.5;font-family:inherit}
+#mi::placeholder{color:var(--dim)}
+.sndbtn{background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;width:42px;height:42px;border-radius:10px;font-size:1.1rem;cursor:pointer;flex-shrink:0;touch-action:manipulation;-webkit-appearance:none;display:flex;align-items:center;justify-content:center}
+/* SHARE MODAL */
+#shareModal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:flex-end;justify-content:center}
+#shareModal.show{display:flex}
+.sbox{background:var(--sur);border-radius:20px 20px 0 0;padding:24px;width:100%;max-width:480px;border-top:1px solid var(--brd)}
+.s-title{font-weight:800;font-size:1.1rem;margin-bottom:4px}
+.s-sub{font-size:.78rem;color:var(--dim);margin-bottom:16px;line-height:1.5}
+.s-link{background:var(--card);border:1px solid var(--brd);border-radius:10px;padding:12px;font-family:monospace;font-size:.72rem;color:#a855f7;word-break:break-all;margin-bottom:12px;line-height:1.6}
+.s-copy{width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;font-size:.95rem;font-weight:700;padding:14px;border-radius:10px;cursor:pointer;touch-action:manipulation;margin-bottom:8px}
+.s-close{width:100%;background:transparent;border:1px solid var(--brd);color:var(--dim);font-size:.85rem;padding:11px;border-radius:10px;cursor:pointer;touch-action:manipulation}
+.s-steps{background:rgba(34,197,94,.05);border:1px solid rgba(34,197,94,.15);border-radius:10px;padding:12px;font-size:.75rem;color:var(--txt);line-height:1.9;margin-bottom:12px}
+.s-steps b{color:var(--grn)}
+</style>
+</head>
+<body>
+
+<!-- LOADING -->
+<div id="loading">
+  <div style="font-size:2.2rem">👻</div>
+  <div class="spinner"></div>
+  <div class="ltxt" id="ltxt">Connecting…</div>
+</div>
+
+<!-- LANDING -->
+<div id="pg-land" class="hide">
+  <div class="logo">👻</div>
+  <div class="brand">AnonChat</div>
+  <div class="tag">Chat with friends anonymously.<br><b>Real people. No bots.</b></div>
+  <div class="box">
+    <div class="lbl">YOUR ANONYMOUS NAME</div>
+    <div class="nrow">
+      <input class="ninp" id="ni" type="text" placeholder="e.g. Shadow42" maxlength="20" autocomplete="off">
+      <button class="dice" id="diceBtn">🎲</button>
+    </div>
+    <div class="lbl">CHOOSE A ROOM</div>
+    <div class="rooms">
+      <div class="room on" data-room="general" data-ico="💬" data-label="General Chat">
+        <div class="room-i">💬</div><div class="room-n">General</div><div class="room-d">Random topics</div>
+      </div>
+      <div class="room" data-room="gaming" data-ico="🎮" data-label="Gaming Lounge">
+        <div class="room-i">🎮</div><div class="room-n">Gaming</div><div class="room-d">Games & memes</div>
+      </div>
+      <div class="room" data-room="music" data-ico="🎵" data-label="Music Vibes">
+        <div class="room-i">🎵</div><div class="room-n">Music</div><div class="room-d">Beats & lyrics</div>
+      </div>
+      <div class="room" data-room="confess" data-ico="🤫" data-label="Confessions">
+        <div class="room-i">🤫</div><div class="room-n">Confessions</div><div class="room-d">Get it off your chest</div>
+      </div>
+    </div>
+    <button class="joinbtn" id="joinBtn">👻 Join Chat</button>
+    <div class="pill"><div class="dot"></div>Real messages · Works on any phone</div>
+  </div>
+</div>
+
+<!-- CHAT -->
+<div id="pg-chat">
+  <div class="topbar">
+    <button class="backbtn" id="leaveBtn">← Leave</button>
+    <div class="tb-info">
+      <div class="tb-i" id="tbIco">💬</div>
+      <div>
+        <div class="tb-n" id="tbName">General Chat</div>
+        <div class="tb-s">anonymous · real people</div>
+      </div>
+    </div>
+    <div class="tb-right">
+      <div class="tb-cnt"><div class="dot"></div><span id="tbCnt">1</span> online</div>
+      <button class="sharebtn" id="shareBtn">⬆ Invite</button>
+    </div>
+  </div>
+  <div class="msgs" id="msgs"></div>
+  <div class="inpbar">
+    <div class="inpwrap">
+      <textarea id="mi" rows="1" placeholder="Say something…"></textarea>
+    </div>
+    <button class="sndbtn" id="sndBtn">➤</button>
+  </div>
+</div>
+
+<!-- SHARE MODAL -->
+<div id="shareModal">
+  <div class="sbox">
+    <div class="s-title">👻 Invite Your Friends</div>
+    <div class="s-sub">Share this link — friends open it and join instantly. No signup needed.</div>
+    <div class="s-steps">
+      <b>How friends join:</b><br>
+      1. They open the link in any browser<br>
+      2. Pick a name → tap Join<br>
+      3. They're in the chat! ✅
+    </div>
+    <div class="s-link" id="shareLink">Loading link…</div>
+    <button class="s-copy" id="copyBtn">📋 Copy Link</button>
+    <button class="s-close" id="closeShare">Close</button>
+  </div>
+</div>
+
+<script>
+// ── FIREBASE — URL BAKED IN ──────────────────────
+var FB_URL = "https://majarul-store-default-rtdb.firebaseio.com";
+
+firebase.initializeApp({ databaseURL: FB_URL });
+var db = firebase.database();
+
+// ── STATE ────────────────────────────────────────
+var myName='', myAv='', myId='', roomId='general', roomIco='💬', roomLabel='General Chat';
+var msgRef=null, presRef=null, presListener=null, msgListener=null;
+
+var NAMES=['Shadow','Ghost','Phantom','Mystery','Cipher','Vortex','Eclipse','Nebula','Specter','Glitch','Pixel','Neon','Void','Storm','Blaze','Frost','Raven','Nova','Ember','Drift','Surge','Comet','Wraith','Onyx','Mirage'];
+var AVS=['👻','🎭','🌙','⚡','🔮','🦊','🐺','🦋','🌊','🎯','🎲','🤖','👾','🦅','🐉','🌀'];
+
+// ── BOOT ─────────────────────────────────────────
+window.addEventListener('load', function(){
+  rnd();
+  // Check URL params for room
+  var params = new URLSearchParams(window.location.search);
+  var r = params.get('room');
+  if(r){
+    var el = document.querySelector('.room[data-room="'+r+'"]');
+    if(el){ pickRoom(el); }
+  }
+  // Test Firebase connection
+  document.getElementById('ltxt').textContent = 'Connecting to chat…';
+  db.ref('.info/connected').on('value', function(snap){
+    if(snap.val()){
+      document.getElementById('loading').classList.add('hide');
+      document.getElementById('pg-land').classList.remove('hide');
+    }
+  });
+  // Timeout fallback
+  setTimeout(function(){
+    document.getElementById('loading').classList.add('hide');
+    document.getElementById('pg-land').classList.remove('hide');
+  }, 4000);
+});
+
+function rnd(){
+  document.getElementById('ni').value = NAMES[Math.floor(Math.random()*NAMES.length)] + Math.floor(Math.random()*999);
+}
+
+// ── ROOM PICK ────────────────────────────────────
+function pickRoom(el){
+  document.querySelectorAll('.room').forEach(function(r){ r.classList.remove('on'); });
+  el.classList.add('on');
+  roomId = el.dataset.room;
+  roomIco = el.dataset.ico;
+  roomLabel = el.dataset.label;
+}
+document.querySelectorAll('.room').forEach(function(el){
+  el.addEventListener('click', function(){ pickRoom(el); });
+  el.addEventListener('touchend', function(e){ e.preventDefault(); pickRoom(el); });
+});
+
+tap('diceBtn', rnd);
+
+// ── JOIN ─────────────────────────────────────────
+tap('joinBtn', doJoin);
+
+function doJoin(){
+  var name = document.getElementById('ni').value.trim();
+  if(!name){ rnd(); name = document.getElementById('ni').value.trim(); }
+  myName = name;
+  myAv   = AVS[Math.floor(Math.random()*AVS.length)];
+  myId   = 'u_' + Date.now() + '_' + Math.random().toString(36).substr(2,5);
+
+  // Switch to chat
+  document.getElementById('pg-land').classList.add('hide');
+  var chat = document.getElementById('pg-chat');
+  chat.style.display = 'flex';
+  chat.style.flexDirection = 'column';
+  document.getElementById('tbIco').textContent  = roomIco;
+  document.getElementById('tbName').textContent = roomLabel;
+  document.getElementById('msgs').innerHTML = '';
+
+  // Firebase refs
+  msgRef  = db.ref('rooms/' + roomId + '/messages');
+  presRef = db.ref('rooms/' + roomId + '/presence/' + myId);
+
+  // Set presence + auto-remove on disconnect
+  presRef.set({ name: myName, av: myAv, ts: firebase.database.ServerValue.TIMESTAMP });
+  presRef.onDisconnect().remove();
+
+  // Online count
+  presListener = db.ref('rooms/' + roomId + '/presence').on('value', function(snap){
+    document.getElementById('tbCnt').textContent = snap.numChildren();
+  });
+
+  // System messages
+  sys('👻 You joined as ' + myAv + ' ' + myName);
+  sys(roomIco + ' ' + roomLabel + ' · anonymous · real people');
+  sys('Say hi! 👋');
+
+  // Listen for NEW messages only (from this moment)
+  var joinTs = Date.now();
+  msgListener = msgRef.orderByChild('ts').startAt(joinTs).on('child_added', function(snap){
+    var m = snap.val();
+    if(!m) return;
+    addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts);
+  });
+}
+
+// ── LEAVE ────────────────────────────────────────
+tap('leaveBtn', doLeave);
+function doLeave(){
+  if(presRef) presRef.remove();
+  if(msgRef && msgListener) msgRef.off('child_added', msgListener);
+  if(presListener) db.ref('rooms/' + roomId + '/presence').off('value', presListener);
+  document.getElementById('pg-chat').style.display = 'none';
+  document.getElementById('pg-land').classList.remove('hide');
+  msgRef = null; presRef = null;
+}
+
+// ── SEND ─────────────────────────────────────────
+tap('sndBtn', sendMsg);
+document.getElementById('mi').addEventListener('keydown', function(e){
+  if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
+});
+document.getElementById('mi').addEventListener('input', function(){
+  this.style.height = 'auto';
+  this.style.height = Math.min(this.scrollHeight, 100) + 'px';
+});
+function sendMsg(){
+  var inp = document.getElementById('mi');
+  var txt = inp.value.trim();
+  if(!txt || !msgRef) return;
+  inp.value = ''; inp.style.height = 'auto';
+  msgRef.push({
+    uid: myId, name: myName, av: myAv,
+    text: txt, ts: firebase.database.ServerValue.TIMESTAMP
+  });
+}
+
+// ── RENDER ───────────────────────────────────────
+function sys(txt){
+  var el = document.createElement('div');
+  el.className = 'smsg'; el.textContent = txt;
+  document.getElementById('msgs').appendChild(el);
+  scrollB();
+}
+function addMsg(type, name, av, txt, ts){
+  var time = '';
+  if(ts){ var d=new Date(ts); time=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}); }
+  var w = document.createElement('div'); w.className = 'msg ' + type;
+  w.innerHTML = '<div class="av">'+esc(av)+'</div><div class="bw"><div class="bn">'+esc(name)+'</div><div class="bb">'+esc(txt)+'</div><div class="bt">'+time+'</div></div>';
+  document.getElementById('msgs').appendChild(w);
+  scrollB();
+}
+function scrollB(){ var b=document.getElementById('msgs'); b.scrollTop=b.scrollHeight; }
+function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+// ── SHARE ────────────────────────────────────────
+tap('shareBtn', openShare);
+tap('closeShare', function(){ document.getElementById('shareModal').classList.remove('show'); });
+tap('copyBtn', copyLink);
+
+function openShare(){
+  // Build the share link — needs to be hosted URL not file://
+  var url = window.location.href.split('?')[0];
+  var isFile = url.startsWith('file://');
+  var link = '';
+  if(isFile){
+    link = '⚠️ Upload to netlify.com/drop first to get a shareable link!\n\nThen your link will look like:\nhttps://your-name.netlify.app?room=' + roomId;
+  } else {
+    link = url + '?room=' + roomId;
+  }
+  document.getElementById('shareLink').textContent = link;
+  document.getElementById('shareModal').classList.add('show');
+}
+
+function copyLink(){
+  var txt = document.getElementById('shareLink').textContent;
+  if(navigator.clipboard && !txt.startsWith('⚠️')){
+    navigator.clipboard.writeText(txt);
+  } else {
+    var t=document.createElement('textarea');t.value=txt;
+    document.body.appendChild(t);t.select();
+    document.execCommand('copy');document.body.removeChild(t);
+  }
+  document.getElementById('copyBtn').textContent = '✅ Copied!';
+  setTimeout(function(){ document.getElementById('copyBtn').textContent = '📋 Copy Link'; }, 2000);
+}
+
+// ── HELPER ───────────────────────────────────────
+function tap(id, fn){
+  var el = document.getElementById(id);
+  if(!el) return;
+  el.addEventListener('click', fn);
+  el.addEventListener('touchend', function(e){ e.preventDefault(); fn(); });
+}
+</script>
+</body>
+</html>
