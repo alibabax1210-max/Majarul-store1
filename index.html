@@ -73,6 +73,48 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
 #mi{flex:1;background:transparent;border:none;outline:none;color:var(--txt);font-size:.95rem;resize:none;max-height:100px;line-height:1.5;font-family:inherit}
 #mi::placeholder{color:var(--dim)}
 .sndbtn{background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;width:42px;height:42px;border-radius:10px;font-size:1.1rem;cursor:pointer;flex-shrink:0;touch-action:manipulation;-webkit-appearance:none;display:flex;align-items:center;justify-content:center}
+.attachbtn{background:none;border:none;font-size:1.1rem;cursor:pointer;padding:2px 4px;opacity:.6;transition:opacity .2s;flex-shrink:0;touch-action:manipulation}
+.attachbtn:hover{opacity:1}
+.msg-img{max-width:100%;max-height:220px;border-radius:10px;display:block;cursor:pointer;margin-top:4px}
+.msg-video{max-width:100%;max-height:220px;border-radius:10px;display:block;margin-top:4px}
+.upload-progress{font-size:.72rem;color:#a855f7;font-family:monospace;padding:4px 0}
+.media-bubble{padding:6px!important}
+/* ADMIN */
+.admin-bar{background:linear-gradient(135deg,rgba(124,58,237,.15),rgba(239,68,68,.1));border-bottom:1px solid rgba(124,58,237,.3);padding:8px 14px;display:none;align-items:center;gap:8px;flex-wrap:wrap;flex-shrink:0}
+.admin-bar.show{display:flex}
+.admin-tag{background:linear-gradient(135deg,#7c3aed,#a855f7);color:#fff;font-size:.65rem;font-weight:800;padding:3px 8px;border-radius:20px;letter-spacing:1px;font-family:monospace}
+.abtn{background:var(--card);border:1px solid var(--brd);color:var(--txt);font-size:.72rem;padding:6px 10px;border-radius:8px;cursor:pointer;touch-action:manipulation;white-space:nowrap;transition:all .2s}
+.abtn:hover{border-color:var(--acc)}
+.abtn.red{border-color:rgba(239,68,68,.3);color:var(--red)}
+.abtn.red:hover{background:rgba(239,68,68,.1)}
+.abtn.grn{border-color:rgba(34,197,94,.3);color:var(--grn)}
+.msg-actions{display:none;gap:4px;margin-top:4px}
+.admin-mode .msg-actions{display:flex}
+.mabtn{background:var(--card);border:1px solid var(--brd);color:var(--dim);font-size:.6rem;padding:3px 7px;border-radius:6px;cursor:pointer;touch-action:manipulation}
+.mabtn.del{color:var(--red);border-color:rgba(239,68,68,.2)}
+.deleted-msg{color:var(--dim);font-style:italic;font-size:.8rem}
+.banned{opacity:.4;pointer-events:none}
+.pin-msg{background:rgba(124,58,237,.08);border:1px solid rgba(124,58,237,.2);border-radius:10px;padding:8px 12px;margin-bottom:8px;font-size:.78rem;display:none}
+.pin-msg.show{display:block}
+.pin-label{font-size:.6rem;color:#a855f7;font-family:monospace;margin-bottom:3px}
+#adminModal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+#adminModal.show{display:flex}
+.amodal{background:var(--sur);border:1px solid var(--brd);border-radius:18px;padding:24px;width:100%;max-width:380px}
+.amodal-title{font-weight:800;font-size:1.1rem;margin-bottom:4px}
+.amodal-sub{font-size:.78rem;color:var(--dim);margin-bottom:16px}
+.ainp{width:100%;background:var(--card);border:1px solid var(--brd);color:var(--txt);font-size:1rem;padding:12px 14px;border-radius:10px;outline:none;margin-bottom:10px;font-family:monospace;letter-spacing:3px}
+.ainp:focus{border-color:var(--acc)}
+.amodal-btn{width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;font-size:.95rem;font-weight:700;padding:13px;border-radius:10px;cursor:pointer;touch-action:manipulation;margin-bottom:8px}
+.amodal-close{width:100%;background:transparent;border:1px solid var(--brd);color:var(--dim);font-size:.85rem;padding:11px;border-radius:10px;cursor:pointer;touch-action:manipulation}
+.aerr{color:var(--red);font-size:.75rem;font-family:monospace;display:none;margin-bottom:8px}
+.aerr.show{display:block}
+#broadcastModal{position:fixed;inset:0;background:rgba(0,0,0,.8);z-index:600;display:none;align-items:center;justify-content:center;padding:20px}
+#broadcastModal.show{display:flex}
+.bmodal{background:var(--sur);border:1px solid var(--brd);border-radius:18px;padding:24px;width:100%;max-width:380px}
+.btxt{width:100%;background:var(--card);border:1px solid var(--brd);color:var(--txt);font-size:.95rem;padding:12px;border-radius:10px;outline:none;resize:none;height:100px;font-family:inherit;margin-bottom:10px}
+.btxt:focus{border-color:var(--acc)}
+.announce-msg{background:linear-gradient(135deg,rgba(124,58,237,.12),rgba(99,102,241,.08));border:1px solid rgba(124,58,237,.3);border-radius:12px;padding:10px 14px;font-size:.88rem}
+.announce-label{font-size:.6rem;color:#a855f7;font-family:monospace;margin-bottom:3px;letter-spacing:1px}
 /* SHARE MODAL */
 #shareModal{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:500;display:none;align-items:flex-end;justify-content:center}
 #shareModal.show{display:flex}
@@ -140,13 +182,32 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
     <div class="tb-right">
       <div class="tb-cnt"><div class="dot"></div><span id="tbCnt">1</span> online</div>
       <button class="sharebtn" id="shareBtn">⬆ Invite</button>
+      <button style="background:var(--card);border:1px solid rgba(124,58,237,.3);color:#a855f7;padding:6px 8px;border-radius:8px;font-size:.8rem;cursor:pointer;touch-action:manipulation" id="adminLoginBtn">👑</button>
     </div>
+  </div>
+  <!-- PINNED MESSAGE -->
+  <div class="pin-msg" id="pinnedMsg">
+    <div class="pin-label">📌 PINNED</div>
+    <div id="pinnedText"></div>
+  </div>
+  <!-- ADMIN BAR -->
+  <div class="admin-bar" id="adminBar">
+    <span class="admin-tag">👑 ADMIN</span>
+    <button class="abtn grn" id="broadcastBtn">📢 Announce</button>
+    <button class="abtn" id="pinLastBtn">📌 Pin Last</button>
+    <button class="abtn" id="unpinBtn">❌ Unpin</button>
+    <button class="abtn red" id="clearChatBtn">🗑️ Clear Chat</button>
+    <button class="abtn red" id="lockRoomBtn">🔒 Lock Room</button>
+    <button class="abtn red" id="viewViolationsBtn">🚨 Violations</button>
+    <button class="abtn" id="viewUploadsBtn">📁 Upload Log</button>
   </div>
   <div class="msgs" id="msgs"></div>
   <div class="inpbar">
     <div class="inpwrap">
+      <button class="attachbtn" id="attachBtn" title="Send photo/video">📎</button>
       <textarea id="mi" rows="1" placeholder="Say something…"></textarea>
     </div>
+    <input type="file" id="fileInput" accept="image/*,video/*" style="display:none">
     <button class="sndbtn" id="sndBtn">➤</button>
   </div>
 </div>
@@ -168,6 +229,73 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;backgrou
   </div>
 </div>
 
+<!-- UPLOAD WARNING MODAL -->
+<div id="uploadWarnModal" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:800;display:none;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--sur);border:1px solid rgba(239,68,68,.3);border-radius:18px;padding:24px;width:100%;max-width:380px">
+    <div style="font-size:2rem;text-align:center;margin-bottom:10px">⚠️</div>
+    <div style="font-weight:800;font-size:1rem;margin-bottom:8px;text-align:center">Before You Send</div>
+    <div style="background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:12px;padding:14px;font-size:.82rem;line-height:1.8;margin-bottom:16px;color:var(--txt)">
+      By sending this file you <b>confirm</b> that it contains:<br>
+      ✅ NO nudity or sexual content<br>
+      ✅ NO adult or explicit material<br>
+      ✅ NO offensive or harmful content<br><br>
+      <span style="color:#ef4444;font-weight:700">⛔ Violations will result in an immediate permanent ban from this chat.</span>
+    </div>
+    <div style="font-size:.72rem;color:var(--dim);font-family:monospace;margin-bottom:14px;text-align:center">
+      Your name and file will be logged for moderation.
+    </div>
+    <button id="uploadAgreeBtn" style="width:100%;background:linear-gradient(135deg,#7c3aed,#a855f7);border:none;color:#fff;font-size:.95rem;font-weight:700;padding:14px;border-radius:10px;cursor:pointer;touch-action:manipulation;margin-bottom:8px">
+      ✅ I Agree — Send File
+    </button>
+    <button id="uploadCancelBtn" style="width:100%;background:transparent;border:1px solid var(--brd);color:var(--dim);font-size:.85rem;padding:12px;border-radius:10px;cursor:pointer;touch-action:manipulation">
+      ❌ Cancel
+    </button>
+  </div>
+</div>
+
+<!-- VIOLATIONS MODAL -->
+<div id="violationsModal" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:700;display:none;align-items:flex-end;justify-content:center">
+  <div style="background:var(--sur);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:70vh;overflow-y:auto;border-top:1px solid var(--brd)">
+    <div style="font-weight:800;font-size:1rem;margin-bottom:4px">🚨 Content Violations</div>
+    <div style="font-size:.75rem;color:var(--dim);margin-bottom:14px">Messages blocked by auto-filter</div>
+    <div id="violationsList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+    <button onclick="document.getElementById('violationsModal').style.display='none'" style="width:100%;background:transparent;border:1px solid var(--brd);color:var(--dim);font-size:.85rem;padding:11px;border-radius:10px;cursor:pointer">Close</button>
+  </div>
+</div>
+
+<!-- UPLOAD LOG MODAL -->
+<div id="uploadLogModal" style="position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:700;display:none;align-items:flex-end;justify-content:center">
+  <div style="background:var(--sur);border-radius:20px 20px 0 0;padding:20px;width:100%;max-width:480px;max-height:70vh;overflow-y:auto;border-top:1px solid var(--brd)">
+    <div style="font-weight:800;font-size:1rem;margin-bottom:4px">📁 Upload Log</div>
+    <div style="font-size:.75rem;color:var(--dim);margin-bottom:14px">All files sent — who sent what and when</div>
+    <div id="uploadLogList" style="display:flex;flex-direction:column;gap:8px;margin-bottom:14px"></div>
+    <button onclick="document.getElementById('uploadLogModal').style.display='none'" style="width:100%;background:transparent;border:1px solid var(--brd);color:var(--dim);font-size:.85rem;padding:11px;border-radius:10px;cursor:pointer">Close</button>
+  </div>
+</div>
+
+<!-- ADMIN LOGIN MODAL -->
+<div id="adminModal">
+  <div class="amodal">
+    <div class="amodal-title">👑 Admin Login</div>
+    <div class="amodal-sub">Enter your secret admin password</div>
+    <input class="ainp" id="adminPwInput" type="password" placeholder="••••••••" maxlength="30">
+    <div class="aerr" id="adminErr">Wrong password! Try again.</div>
+    <button class="amodal-btn" id="adminLoginSubmit">Login as Admin</button>
+    <button class="amodal-close" id="adminModalClose">Cancel</button>
+  </div>
+</div>
+
+<!-- BROADCAST MODAL -->
+<div id="broadcastModal">
+  <div class="bmodal">
+    <div class="amodal-title">📢 Send Announcement</div>
+    <div class="amodal-sub">This message will appear highlighted for everyone</div>
+    <textarea class="btxt" id="broadcastTxt" placeholder="Type your announcement…"></textarea>
+    <button class="amodal-btn" id="broadcastSend">📢 Send to Everyone</button>
+    <button class="amodal-close" id="broadcastClose">Cancel</button>
+  </div>
+</div>
+
 <script>
 // ── FIREBASE — URL BAKED IN ──────────────────────
 var FB_URL = "https://majarul-store-default-rtdb.firebaseio.com";
@@ -178,6 +306,50 @@ var db = firebase.database();
 // ── STATE ────────────────────────────────────────
 var myName='', myAv='', myId='', roomId='general', roomIco='💬', roomLabel='General Chat';
 var msgRef=null, presRef=null, presListener=null, msgListener=null;
+var isAdmin=false, roomLocked=false;
+var ADMIN_PASSWORD='Aibaba@5566##'; // 🔑 YOUR SECRET PASSWORD — change this!
+var bannedUsers=new Set();
+var userWarnings={};  // uid -> warning count
+var BANNED_WORDS=[
+  // Sexual/adult terms
+  'sex','sexy','nude','naked','porn','pornography','xxx','adult','horny',
+  'dick','cock','pussy','vagina','penis','boobs','boob','tits','tit','ass',
+  'anal','oral','masturbat','orgasm','erotic','fetish','bdsm','rape','molest',
+  'slutty','slut','whore','prostitut','escort','hookup','nudes','nsfw',
+  'onlyfans','camgirl','stripper','blowjob','handjob','threesome','gangbang',
+  'cum','cumshot','dildo','vibrator','kinky','naughty','lust','lusty',
+  'f**k','fuk','fck','sx','pr0n','p0rn','s3x','n3ked','nood','bewbs',
+  // Variants with numbers/symbols
+  'f@ck','sh1t','b1tch','a55','@ss'
+];
+
+function containsBannedWord(txt){
+  var lower = txt.toLowerCase().replace(/[^a-z0-9@#$!]/g,'');
+  for(var i=0;i<BANNED_WORDS.length;i++){
+    var w = BANNED_WORDS[i].replace(/[^a-z0-9@#$!]/g,'');
+    if(lower.includes(w)) return true;
+  }
+  // Check with spaces removed too
+  var nospace = txt.toLowerCase().replace(/\s/g,'');
+  for(var i=0;i<BANNED_WORDS.length;i++){
+    if(nospace.includes(BANNED_WORDS[i])) return true;
+  }
+  return false;
+}
+
+function warnUser(txt){
+  // Show warning to the sender only (local)
+  var warn = document.createElement('div');
+  warn.className = 'smsg';
+  warn.style.color = '#ef4444';
+  warn.style.borderColor = 'rgba(239,68,68,.3)';
+  warn.style.background = 'rgba(239,68,68,.05)';
+  warn.textContent = '⚠️ Your message was removed: Sexual or adult content is NOT allowed in this chat. Repeated violations will get you banned.';
+  document.getElementById('msgs').appendChild(warn);
+  scrollB();
+  // Auto remove warning after 8 seconds
+  setTimeout(function(){ if(warn.parentNode) warn.remove(); }, 8000);
+}
 
 var NAMES=['Shadow','Ghost','Phantom','Mystery','Cipher','Vortex','Eclipse','Nebula','Specter','Glitch','Pixel','Neon','Void','Storm','Blaze','Frost','Raven','Nova','Ember','Drift','Surge','Comet','Wraith','Onyx','Mirage'];
 var AVS=['👻','🎭','🌙','⚡','🔮','🦊','🐺','🦋','🌊','🎯','🎲','🤖','👾','🦅','🐉','🌀'];
@@ -263,6 +435,9 @@ function doJoin(){
   sys(roomIco + ' ' + roomLabel + ' · anonymous · real people');
   sys('Say hi! 👋');
 
+  // Listen to room meta (pinned, locked)
+  listenRoomMeta();
+
   // Load last 50 messages first, then listen for new ones
   msgRef.orderByChild('ts').limitToLast(50).once('value', function(snap){
     var messages = [];
@@ -271,7 +446,7 @@ function doJoin(){
       sys('📜 ' + messages.length + ' previous messages loaded');
       messages.forEach(function(m){
         if(!m) return;
-        addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts);
+        addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts, m.mediaUrl, m.mediaType, m.isAnnouncement, child.key);
       });
     } else {
       sys('No previous messages — be the first! 👋');
@@ -281,7 +456,7 @@ function doJoin(){
     msgListener = msgRef.orderByChild('ts').startAt(lastTs).on('child_added', function(snap){
       var m = snap.val();
       if(!m) return;
-      addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts);
+      addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts, m.mediaUrl, m.mediaType, m.isAnnouncement, snap.key);
     });
   });
 }
@@ -299,6 +474,156 @@ function doLeave(){
 
 // ── SEND ─────────────────────────────────────────
 tap('sndBtn', sendMsg);
+tap('attachBtn', function(){ document.getElementById('fileInput').click(); });
+var pendingFile = null;
+
+document.getElementById('fileInput').addEventListener('change', function(e){
+  var file = e.target.files[0];
+  if(!file) return;
+  var isVideo = file.type.startsWith('video/');
+  var maxSize = isVideo ? 500*1024*1024 : 10*1024*1024;
+  if(file.size > maxSize){
+    alert('File too large! Max ' + (isVideo ? '500MB for videos' : '10MB for images'));
+    e.target.value = '';
+    return;
+  }
+  // Store file and show warning modal
+  pendingFile = file;
+  e.target.value = '';
+  document.getElementById('uploadWarnModal').style.display = 'flex';
+  document.getElementById('uploadWarnModal').style.alignItems = 'center';
+  document.getElementById('uploadWarnModal').style.justifyContent = 'center';
+});
+
+// Agree — proceed with upload
+document.getElementById('uploadAgreeBtn').addEventListener('click', function(){
+  document.getElementById('uploadWarnModal').style.display = 'none';
+  if(pendingFile){
+    // Log agreement to Firebase
+    db.ref('rooms/'+roomId+'/uploadLog').push({
+      uid: myId, name: myName,
+      fileName: pendingFile.name,
+      fileSize: pendingFile.size,
+      fileType: pendingFile.type,
+      agreedAt: firebase.database.ServerValue.TIMESTAMP
+    });
+    uploadMedia(pendingFile);
+    pendingFile = null;
+  }
+});
+document.getElementById('uploadAgreeBtn').addEventListener('touchend', function(e){
+  e.preventDefault();
+  document.getElementById('uploadWarnModal').style.display = 'none';
+  if(pendingFile){
+    db.ref('rooms/'+roomId+'/uploadLog').push({
+      uid: myId, name: myName,
+      fileName: pendingFile.name,
+      fileSize: pendingFile.size,
+      fileType: pendingFile.type,
+      agreedAt: firebase.database.ServerValue.TIMESTAMP
+    });
+    uploadMedia(pendingFile);
+    pendingFile = null;
+  }
+});
+
+// Cancel
+document.getElementById('uploadCancelBtn').addEventListener('click', function(){
+  document.getElementById('uploadWarnModal').style.display = 'none';
+  pendingFile = null;
+});
+document.getElementById('uploadCancelBtn').addEventListener('touchend', function(e){
+  e.preventDefault();
+  document.getElementById('uploadWarnModal').style.display = 'none';
+  pendingFile = null;
+});
+
+// ── CLOUDINARY CONFIG (free account) ─────────────
+var CLOUD_NAME = 'dt2sehttn';
+var UPLOAD_PRESET = 'Alibaba585';
+
+function uploadMedia(file){
+  if(!msgRef){ alert('Please join a room first!'); return; }
+  var isVideo = file.type.startsWith('video/');
+  var maxSize = isVideo ? 500*1024*1024 : 10*1024*1024; // 500MB video, 10MB image
+  if(file.size > maxSize){
+    alert('File too large! Max ' + (isVideo ? '500MB for videos' : '10MB for images'));
+    return;
+  }
+
+  // Show uploading indicator
+  var uploadId = 'up_' + Date.now();
+  var upEl = document.createElement('div');
+  upEl.id = uploadId;
+  upEl.className = 'smsg';
+  upEl.innerHTML = (isVideo ? '🎥' : '🖼️') + ' Uploading 0%…';
+  document.getElementById('msgs').appendChild(upEl);
+  scrollB();
+
+  // Upload to Cloudinary via XHR (supports progress + large files)
+  var formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+  formData.append('folder', 'anonchat');
+
+  var xhr = new XMLHttpRequest();
+  var endpoint = isVideo
+    ? 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/video/upload'
+    : 'https://api.cloudinary.com/v1_1/' + CLOUD_NAME + '/image/upload';
+
+  xhr.upload.onprogress = function(e){
+    if(e.lengthComputable){
+      var pct = Math.round(e.loaded / e.total * 100);
+      var el = document.getElementById(uploadId);
+      if(el) el.innerHTML = (isVideo ? '🎥' : '🖼️') + ' Uploading ' + pct + '%… <b style="color:#a855f7">' + pct + '%</b>';
+    }
+  };
+
+  xhr.onload = function(){
+    var el = document.getElementById(uploadId);
+    if(el) el.remove();
+    if(xhr.status === 200){
+      var res = JSON.parse(xhr.responseText);
+      var url = res.secure_url;
+      msgRef.push({
+        uid: myId, name: myName, av: myAv,
+        text: '',
+        mediaUrl: url,
+        mediaType: isVideo ? 'video' : 'image',
+        fileName: file.name,
+        ts: firebase.database.ServerValue.TIMESTAMP
+      });
+    } else {
+      // Fallback to base64 for images if Cloudinary fails
+      if(!isVideo){
+        var reader = new FileReader();
+        reader.onload = function(e){
+          msgRef.push({
+            uid: myId, name: myName, av: myAv,
+            text: '', mediaUrl: e.target.result,
+            mediaType: 'image',
+            ts: firebase.database.ServerValue.TIMESTAMP
+          });
+        };
+        reader.readAsDataURL(file);
+      } else {
+        var errEl = document.createElement('div');
+        errEl.className = 'smsg';
+        errEl.textContent = '❌ Upload failed — check Cloudinary setup';
+        document.getElementById('msgs').appendChild(errEl);
+        scrollB();
+      }
+    }
+  };
+
+  xhr.onerror = function(){
+    var el = document.getElementById(uploadId);
+    if(el) el.textContent = '❌ Upload failed — check internet connection';
+  };
+
+  xhr.open('POST', endpoint);
+  xhr.send(formData);
+}
 document.getElementById('mi').addEventListener('keydown', function(e){
   if(e.key === 'Enter' && !e.shiftKey){ e.preventDefault(); sendMsg(); }
 });
@@ -310,6 +635,21 @@ function sendMsg(){
   var inp = document.getElementById('mi');
   var txt = inp.value.trim();
   if(!txt || !msgRef) return;
+  if(roomLocked && !isAdmin){ sys('🔒 Room is locked — only admin can send messages'); return; }
+  
+  // ── AUTO CONTENT FILTER ──
+  if(containsBannedWord(txt)){
+    warnUser(txt);
+    inp.value = ''; inp.style.height = 'auto';
+    // Log violation to Firebase so admin can see
+    db.ref('rooms/'+roomId+'/violations').push({
+      uid: myId, name: myName,
+      text: txt,
+      ts: firebase.database.ServerValue.TIMESTAMP
+    });
+    return; // Block the message from sending
+  }
+
   inp.value = ''; inp.style.height = 'auto';
   msgRef.push({
     uid: myId, name: myName, av: myAv,
@@ -324,11 +664,21 @@ function sys(txt){
   document.getElementById('msgs').appendChild(el);
   scrollB();
 }
-function addMsg(type, name, av, txt, ts){
+function addMsg(type, name, av, txt, ts, mediaUrl, mediaType){
   var time = '';
   if(ts){ var d=new Date(ts); time=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}); }
   var w = document.createElement('div'); w.className = 'msg ' + type;
-  w.innerHTML = '<div class="av">'+esc(av)+'</div><div class="bw"><div class="bn">'+esc(name)+'</div><div class="bb">'+esc(txt)+'</div><div class="bt">'+time+'</div></div>';
+  var mediaHtml = '';
+  if(mediaUrl){
+    if(mediaType === 'video'){
+      mediaHtml = '<video class="msg-video" controls playsinline><source src="'+mediaUrl+'"></video>';
+    } else {
+      mediaHtml = '<img class="msg-img" src="'+mediaUrl+'" onclick="window.open(this.src,\'_blank\')" loading="lazy">';
+    }
+  }
+  var bubbleClass = mediaUrl ? 'bb media-bubble' : 'bb';
+  var bubbleContent = mediaUrl ? mediaHtml : esc(txt);
+  w.innerHTML = '<div class="av">'+esc(av)+'</div><div class="bw"><div class="bn">'+esc(name)+'</div><div class="'+bubbleClass+'">'+bubbleContent+'</div><div class="bt">'+time+'</div></div>';
   document.getElementById('msgs').appendChild(w);
   scrollB();
 }
@@ -367,7 +717,158 @@ function copyLink(){
   setTimeout(function(){ document.getElementById('copyBtn').textContent = '📋 Copy Link'; }, 2000);
 }
 
+// ── ADMIN ────────────────────────────────────────
+function tapAdmin(id,fn){var el=document.getElementById(id);if(!el)return;el.addEventListener('click',fn);el.addEventListener('touchend',function(e){e.preventDefault();fn();});}
+
+tapAdmin('adminLoginBtn', function(){
+  document.getElementById('adminPwInput').value='';
+  document.getElementById('adminErr').classList.remove('show');
+  document.getElementById('adminModal').classList.add('show');
+});
+tapAdmin('adminModalClose', function(){ document.getElementById('adminModal').classList.remove('show'); });
+tapAdmin('adminLoginSubmit', function(){
+  var pw = document.getElementById('adminPwInput').value;
+  if(pw === ADMIN_PASSWORD){
+    isAdmin=true;
+    document.getElementById('adminModal').classList.remove('show');
+    document.getElementById('adminBar').classList.add('show');
+    document.getElementById('msgs').classList.add('admin-mode');
+    sys('👑 You are now in Admin mode');
+    document.getElementById('adminLoginBtn').textContent='👑✅';
+    document.getElementById('adminLoginBtn').style.background='rgba(124,58,237,.2)';
+  } else {
+    document.getElementById('adminErr').classList.add('show');
+  }
+});
+
+// Broadcast
+tapAdmin('broadcastBtn', function(){ document.getElementById('broadcastTxt').value=''; document.getElementById('broadcastModal').classList.add('show'); });
+tapAdmin('broadcastClose', function(){ document.getElementById('broadcastModal').classList.remove('show'); });
+tapAdmin('broadcastSend', function(){
+  var txt = document.getElementById('broadcastTxt').value.trim();
+  if(!txt || !msgRef) return;
+  msgRef.push({
+    uid:myId, name:'📢 ADMIN', av:'👑',
+    text:txt, isAnnouncement:true,
+    ts: firebase.database.ServerValue.TIMESTAMP
+  });
+  document.getElementById('broadcastModal').classList.remove('show');
+});
+
+// Pin last message
+tapAdmin('pinLastBtn', function(){
+  if(!msgRef) return;
+  msgRef.orderByChild('ts').limitToLast(1).once('value', function(snap){
+    snap.forEach(function(child){
+      var m=child.val();
+      if(m && m.text){
+        db.ref('rooms/'+roomId+'/pinned').set({text:m.text, name:m.name});
+        showPinned(m.text);
+        sys('📌 Message pinned!');
+      }
+    });
+  });
+});
+
+// Unpin
+tapAdmin('unpinBtn', function(){
+  db.ref('rooms/'+roomId+'/pinned').remove();
+  document.getElementById('pinnedMsg').classList.remove('show');
+  sys('📌 Message unpinned');
+});
+
+// Clear chat
+tapAdmin('clearChatBtn', function(){
+  if(!confirm('Clear ALL messages? This cannot be undone!')) return;
+  if(!msgRef) return;
+  msgRef.remove().then(function(){
+    document.getElementById('msgs').innerHTML='';
+    sys('🗑️ Chat cleared by admin');
+  });
+});
+
+// View upload log
+tapAdmin('viewUploadsBtn', function(){
+  document.getElementById('uploadLogList').innerHTML = '<div style="color:var(--dim);font-size:.75rem;font-family:monospace">Loading…</div>';
+  document.getElementById('uploadLogModal').style.display = 'flex';
+  document.getElementById('uploadLogModal').style.alignItems = 'flex-end';
+  document.getElementById('uploadLogModal').style.justifyContent = 'center';
+  db.ref('rooms/'+roomId+'/uploadLog').orderByChild('agreedAt').limitToLast(30).once('value', function(snap){
+    var list = document.getElementById('uploadLogList');
+    list.innerHTML = '';
+    var items = [];
+    snap.forEach(function(child){ items.push(child.val()); });
+    if(!items.length){
+      list.innerHTML = '<div style="color:var(--dim);font-size:.8rem;font-family:monospace;text-align:center;padding:20px">No uploads yet</div>';
+      return;
+    }
+    items.reverse().forEach(function(v){
+      var d = new Date(v.agreedAt);
+      var time = d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+      var size = v.fileSize ? (v.fileSize/1024/1024).toFixed(2)+'MB' : '?';
+      var el = document.createElement('div');
+      el.style.cssText = 'background:rgba(124,58,237,.06);border:1px solid rgba(124,58,237,.2);border-radius:10px;padding:10px 12px';
+      el.innerHTML = '<div style="font-size:.65rem;color:#a855f7;font-family:monospace;margin-bottom:3px">📎 '+esc(v.name)+' · '+time+'</div><div style="font-size:.78rem;color:var(--txt)">'+esc(v.fileName||'unknown')+'</div><div style="font-size:.65rem;color:var(--dim);font-family:monospace;margin-top:2px">'+esc(v.fileType||'?')+' · '+size+'</div>';
+      list.appendChild(el);
+    });
+  });
+});
+
+// View violations
+tapAdmin('viewViolationsBtn', function(){
+  document.getElementById('violationsList').innerHTML = '<div style="color:var(--dim);font-size:.75rem;font-family:monospace">Loading…</div>';
+  document.getElementById('violationsModal').style.display = 'flex';
+  document.getElementById('violationsModal').style.alignItems = 'flex-end';
+  document.getElementById('violationsModal').style.justifyContent = 'center';
+  db.ref('rooms/'+roomId+'/violations').orderByChild('ts').limitToLast(20).once('value', function(snap){
+    var list = document.getElementById('violationsList');
+    list.innerHTML = '';
+    var items = [];
+    snap.forEach(function(child){ items.push(child.val()); });
+    if(!items.length){
+      list.innerHTML = '<div style="color:var(--dim);font-size:.8rem;font-family:monospace;text-align:center;padding:20px">No violations yet ✅</div>';
+      return;
+    }
+    items.reverse().forEach(function(v){
+      var d = new Date(v.ts);
+      var time = d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true});
+      var el = document.createElement('div');
+      el.style.cssText = 'background:rgba(239,68,68,.06);border:1px solid rgba(239,68,68,.2);border-radius:10px;padding:10px 12px';
+      el.innerHTML = '<div style="font-size:.65rem;color:#ef4444;font-family:monospace;margin-bottom:3px">⚠️ '+esc(v.name)+' · '+time+'</div><div style="font-size:.82rem;color:var(--txt)">'+esc(v.text)+'</div>';
+      list.appendChild(el);
+    });
+  });
+});
+
+// Lock/unlock room
+tapAdmin('lockRoomBtn', function(){
+  roomLocked=!roomLocked;
+  db.ref('rooms/'+roomId+'/locked').set(roomLocked);
+  document.getElementById('lockRoomBtn').textContent = roomLocked ? '🔓 Unlock Room' : '🔒 Lock Room';
+  sys(roomLocked ? '🔒 Room locked — no new messages allowed' : '🔓 Room unlocked');
+});
+
+function showPinned(txt){
+  document.getElementById('pinnedText').textContent=txt;
+  document.getElementById('pinnedMsg').classList.add('show');
+}
+
+// Listen for pinned message + room lock
+function listenRoomMeta(){
+  db.ref('rooms/'+roomId+'/pinned').on('value', function(snap){
+    var p=snap.val();
+    if(p && p.text){ showPinned(p.text); }
+    else { document.getElementById('pinnedMsg').classList.remove('show'); }
+  });
+  db.ref('rooms/'+roomId+'/locked').on('value', function(snap){
+    roomLocked = snap.val()===true;
+    if(roomLocked && !isAdmin) sys('🔒 This room is locked by admin');
+  });
+}
+
 // ── HELPER ───────────────────────────────────────
+function tapAdmin2(id,fn){var el=document.getElementById(id);if(!el)return;el.addEventListener('click',fn);el.addEventListener('touchend',function(e){e.preventDefault();fn();});}
+
 function tap(id, fn){
   var el = document.getElementById(id);
   if(!el) return;
