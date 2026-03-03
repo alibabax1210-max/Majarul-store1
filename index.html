@@ -440,19 +440,22 @@ function doJoin(){
 
   // Load last 50 messages first, then listen for new ones
   msgRef.orderByChild('ts').limitToLast(50).once('value', function(snap){
-    var messages = [];
-    snap.forEach(function(child){ messages.push(child.val()); });
-    if(messages.length > 0){
-      sys('📜 ' + messages.length + ' previous messages loaded');
-      messages.forEach(function(m){
+    var pairs = [];
+    snap.forEach(function(child){
+      pairs.push({key: child.key, val: child.val()});
+    });
+    if(pairs.length > 0){
+      sys('📜 ' + pairs.length + ' previous messages loaded');
+      pairs.forEach(function(p){
+        var m = p.val;
         if(!m) return;
-        addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts, m.mediaUrl, m.mediaType, m.isAnnouncement, child.key);
+        addMsg(m.uid === myId ? 'me' : 'them', m.name, m.av, m.text, m.ts, m.mediaUrl, m.mediaType, m.isAnnouncement, p.key);
       });
     } else {
       sys('No previous messages — be the first! 👋');
     }
     // Now listen for brand new messages
-    var lastTs = messages.length > 0 ? messages[messages.length-1].ts + 1 : Date.now();
+    var lastTs = pairs.length > 0 ? pairs[pairs.length-1].val.ts + 1 : Date.now();
     msgListener = msgRef.orderByChild('ts').startAt(lastTs).on('child_added', function(snap){
       var m = snap.val();
       if(!m) return;
@@ -664,23 +667,10 @@ function sys(txt){
   document.getElementById('msgs').appendChild(el);
   scrollB();
 }
-function addMsg(type, name, av, txt, ts, mediaUrl, mediaType, isAnnouncement, msgKey){
+function addMsg(type, name, av, txt, ts, mediaUrl, mediaType){
   var time = '';
   if(ts){ var d=new Date(ts); time=d.toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',hour12:true}); }
-
-  // Announcement style
-  if(isAnnouncement){
-    var ann=document.createElement('div');
-    ann.className='announce-msg';
-    ann.innerHTML='<div class="announce-label">📢 ANNOUNCEMENT</div>'+esc(txt);
-    document.getElementById('msgs').appendChild(ann);
-    scrollB(); return;
-  }
-
-  var w = document.createElement('div');
-  w.className = 'msg ' + type;
-  if(msgKey) w.dataset.key = msgKey;
-
+  var w = document.createElement('div'); w.className = 'msg ' + type;
   var mediaHtml = '';
   if(mediaUrl){
     if(mediaType === 'video'){
@@ -691,27 +681,9 @@ function addMsg(type, name, av, txt, ts, mediaUrl, mediaType, isAnnouncement, ms
   }
   var bubbleClass = mediaUrl ? 'bb media-bubble' : 'bb';
   var bubbleContent = mediaUrl ? mediaHtml : esc(txt);
-
-  // Admin delete/pin buttons
-  var adminActions = (msgKey && !mediaUrl) ? '<div class="msg-actions"><button class="mabtn del" onclick="adminDeleteMsg(''+msgKey+'',this)">🗑️ Delete</button><button class="mabtn" onclick="adminPinMsg(''+esc(txt)+'')">📌 Pin</button></div>' : '';
-
-  w.innerHTML = '<div class="av">'+esc(av)+'</div><div class="bw"><div class="bn">'+esc(name)+'</div><div class="'+bubbleClass+'">'+bubbleContent+'</div><div class="bt">'+time+'</div>'+adminActions+'</div>';
+  w.innerHTML = '<div class="av">'+esc(av)+'</div><div class="bw"><div class="bn">'+esc(name)+'</div><div class="'+bubbleClass+'">'+bubbleContent+'</div><div class="bt">'+time+'</div></div>';
   document.getElementById('msgs').appendChild(w);
   scrollB();
-}
-
-function adminDeleteMsg(key, btn){
-  if(!isAdmin) return;
-  db.ref('rooms/'+roomId+'/messages/'+key).update({text:'🚫 Message deleted by admin', mediaUrl:null, deleted:true});
-  var msgEl = btn.closest('.msg');
-  if(msgEl){ msgEl.querySelector('.bb').innerHTML='<span class="deleted-msg">🚫 Deleted by admin</span>'; }
-}
-
-function adminPinMsg(txt){
-  if(!isAdmin) return;
-  db.ref('rooms/'+roomId+'/pinned').set({text:txt});
-  showPinned(txt);
-  sys('📌 Message pinned!');
 }
 function scrollB(){ var b=document.getElementById('msgs'); b.scrollTop=b.scrollHeight; }
 function esc(t){ return String(t).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
